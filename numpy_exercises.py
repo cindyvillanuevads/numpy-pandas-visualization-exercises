@@ -67,20 +67,32 @@ a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 # Use python's built in functionality/operators to determine the following:
 # Exercise 1 - Make a variable called sum_of_a to hold the sum of all the numbers in above list
+sum_of_a = sum(a)
+
 
 # Exercise 2 - Make a variable named min_of_a to hold the minimum of all the numbers in the above list
+min_of_a = min(a)
 
 # Exercise 3 - Make a variable named max_of_a to hold the max number of all the numbers in the above list
+max_of_a = max(a)
 
 # Exercise 4 - Make a variable named mean_of_a to hold the average of all the numbers in the above list
+mean_of_a = sum_of_a / len(a)
 
 # Exercise 5 - Make a variable named product_of_a to hold the product of multiplying all the numbers in the above list together
+product_of_a = 1
+for n in a:
+    product_of_a = product_of_a * n
+
 
 # Exercise 6 - Make a variable named squares_of_a. It should hold each number in a squared like [1, 4, 9, 16, 25...]
+squares_of_a = [n ** 2 for n in a]
 
 # Exercise 7 - Make a variable named odds_in_a. It should hold only the odd numbers
+odds_in_a =[ n for n in a if n % 2 != 0 ]
 
 # Exercise 8 - Make a variable named evens_in_a. It should hold only the evens.
+evens_in_a =[ n for n in a if n % 2 == 0 ]
 
 ## What about life in two dimensions? A list of lists is matrix, a table, a spreadsheet, a chessboard...
 ## Setup 2: Consider what it would take to find the sum, min, max, average, sum, product, and list of squares for this list of two lists.
@@ -89,7 +101,17 @@ b = [
     [6, 7, 8]
 ]
 
-# Exercise 1 - refactor the following to use numpy. Use sum_of_b as the variable. **Hint, you'll first need to make sure that the "b" variable is a numpy array**
+# Exercise 1 - refactor the following to use numpy. Use sum_of_b as the variable. 
+# **Hint, you'll first need to make sure that the "b" variable is a numpy array**
+#we need to convert c which is a list into an array
+b = np.array(b)
+type(b)
+#this gives us the sum of each column. we dont want that
+sum_of_b = sum(b)
+
+#this gives us the sum of each row
+example = sum(b[0])
+
 sum_of_b = 0
 for row in b:
     sum_of_b += sum(row)
@@ -133,13 +155,13 @@ for row in b:
             evens_in_b.append(number)
 
 # Exercise 9 - print out the shape of the array b.
-
+print(b.shape)
 # Exercise 10 - transpose the array b.
-
+ np.transpose(b)
 # Exercise 11 - reshape the array b to be a single list of 6 numbers. (1 x 6)
-
+np.reshape(b,6)
 # Exercise 12 - reshape the array b to be a list of 6 lists, each containing only 1 number (6 x 1)
-
+np.reshape(b,(6,1))
 ## Setup 3
 c = [
     [1, 2, 3],
@@ -149,7 +171,7 @@ c = [
 
 # HINT, you'll first need to make sure that the "c" variable is a numpy array prior to using numpy array methods.
 # Exercise 1 - Find the min, max, sum, and product of c.
-
+c = np.array(c)
 # Exercise 2 - Determine the standard deviation of c.
 
 # Exercise 3 - Determine the variance of c.
