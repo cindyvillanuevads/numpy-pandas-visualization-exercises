@@ -23,6 +23,14 @@ even = a[a % 2 == 0 ]
 total_even_postitive = (len(even[even > 0]))
 print("Total positive even numbers: ", total_even_postitive)
 
+# ********another way to do it *****
+positive_mask = a > 0
+even_mask = a % 2 == 0
+a[positive_mask & even_mask].shape[0]
+# Or...
+positives = a[a > 0]
+positive_evens = positives[positives % 2 == 0]
+
 # 4. If you were to add 3 to each data point, how many positive numbers would there be?
 #add 3 to each element that is in the array
 even_3 = a + 3
@@ -106,53 +114,57 @@ b = [
 #we need to convert c which is a list into an array
 b = np.array(b)
 type(b)
-#this gives us the sum of each column. we dont want that
-sum_of_b = sum(b)
 
-#this gives us the sum of each row
-example = sum(b[0])
+# sum_of_b = 0
+# for row in b:
+#     sum_of_b += sum(row)
 
-sum_of_b = 0
-for row in b:
-    sum_of_b += sum(row)
+sum_of_b = b.sum()
 
 # Exercise 2 - refactor the following to use numpy. 
-min_of_b = min(b[0]) if min(b[0]) <= min(b[1]) else min(b[1])  
+# min_of_b = min(b[0]) if min(b[0]) <= min(b[1]) else min(b[1])  
+
+min_of_b = b.min()
 
 # Exercise 3 - refactor the following maximum calculation to find the answer with numpy.
-max_of_b = max(b[0]) if max(b[0]) >= max(b[1]) else max(b[1])
-
+# max_of_b = max(b[0]) if max(b[0]) >= max(b[1]) else max(b[1])
+max_of_b = b.max()
 
 # Exercise 4 - refactor the following using numpy to find the mean of b
-mean_of_b = (sum(b[0]) + sum(b[1])) / (len(b[0]) + len(b[1]))
+# mean_of_b = (sum(b[0]) + sum(b[1])) / (len(b[0]) + len(b[1]))
+mean_of_b = b.mean()
 
 # Exercise 5 - refactor the following to use numpy for calculating the product of all numbers multiplied together.
-product_of_b = 1
-for row in b:
-    for number in row:
-        product_of_b *= number
+# product_of_b = 1
+# for row in b:
+#     for number in row:
+#         product_of_b *= number
 
+product_of_b = b.prod()
 # Exercise 6 - refactor the following to use numpy to find the list of squares 
-squares_of_b = []
-for row in b:
-    for number in row:
-        squares_of_b.append(number**2)
-
+# squares_of_b = []
+# for row in b:
+#     for number in row:
+#         squares_of_b.append(number**2)
+squares_of_b = b ** 2
 
 # Exercise 7 - refactor using numpy to determine the odds_in_b
-odds_in_b = []
-for row in b:
-    for number in row:
-        if(number % 2 != 0):
-            odds_in_b.append(number)
+# odds_in_b = []
+# for row in b:
+#     for number in row:
+#         if(number % 2 != 0):
+#             odds_in_b.append(number)
+
+odds_in_b = b[b % 2 == 1]
 
 
 # Exercise 8 - refactor the following to use numpy to filter only the even numbers
-evens_in_b = []
-for row in b:
-    for number in row:
-        if(number % 2 == 0):
-            evens_in_b.append(number)
+# evens_in_b = []
+# for row in b:
+#     for number in row:
+#         if(number % 2 == 0):
+#             evens_in_b.append(number)
+evens_in_b = b[b % 2 == 1]
 
 # Exercise 9 - print out the shape of the array b.
 print(b.shape)
