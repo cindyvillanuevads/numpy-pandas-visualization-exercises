@@ -1,6 +1,8 @@
 from pydataset import data
 import pandas as pd
 import numpy as np
+
+
 # 1. Copy the code from the lesson to create a dataframe full of student grades.
 np.random.seed(123)
 
@@ -18,6 +20,7 @@ df = pd.DataFrame({'name': students,
                    'english': english_grades,
                    'reading': reading_grades})
 
+
 # 1.a Create a column named passing_english that indicates whether each student has a passing grade in english.
 
 df["passing_english"] = df.english > 70
@@ -25,6 +28,8 @@ df["passing_english"] = df.english > 70
 # 1.b Sort the english grades by the passing_english column. How are duplicates handled?
 # it shows first all False and then All true
 df["passing_english"] = df.english > 70
+
+
 # 1.c Sort the english grades first by passing_english and then by student name. 
 # All the students that are failing english should be first,
 #  and within the students that are failing english they should be ordered alphabetically.
@@ -32,9 +37,12 @@ df["passing_english"] = df.english > 70
 # (Hint: you can pass a list to the .sort_values method)
 df.sort_values(by=['passing_english', 'name'], ascending=[True, True])
 
+
 # 1.d Sort the english grades first by passing_english, and then by the actual english grade,
 #  similar to how we did in the last step.
 df.sort_values(by = ['passing_english','english'], ascending=[True, True])
+
+
 # 1.e Calculate each students overall grade and add it as a column on the dataframe. 
 # The overall grade is the average of the math, english, and reading grades.
 df['overall_grade'] = (df['math'] + df['english']) / 2
@@ -64,6 +72,7 @@ mpg.dtypes
 # fl               object
 # class            object
 # dtype: object
+
 
 # Summarize the dataframe with .info and .describe
 mpg.info()
@@ -104,15 +113,16 @@ mpg = mpg.rename(columns={"cty":"city"})
 mpg = mpg.rename(columns={'hwy':'highway'})
 
 # Do any cars have better city mileage than highway mileage?
-#no
+#no, there is no cars thar have better city mileage than highway mileage
 mpg[mpg.city > mpg.highway][['model', 'city', 'highway']]
 
 # Create a column named mileage_difference this column should contain the difference between highway and city mileage for each car.
 
 mpg["mileage_difference"] = mpg["highway"] - mpg ["city"]
 
+
 # Which car (or cars) has the highest mileage difference?
-#here i can see there are 2 cars that has the highest mileage difference
+#here I  can see there are 2 cars that has the highest mileage difference
 mpg.sort_values(by= 'mileage_difference', ascending = False).head(3)
 
 #other way
