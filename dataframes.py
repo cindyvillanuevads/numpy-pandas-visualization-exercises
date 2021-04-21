@@ -26,7 +26,7 @@ df = pd.DataFrame({'name': students,
 df["passing_english"] = df.english >= 70
 
 # 1.b Sort the english grades by the passing_english column. How are duplicates handled?
-# it shows first all False and then All true. it sorted by index
+# it shows first all False and then All true. it sorted by index value
 #df["passing_english"] = df.english > 70
 
 df.sort_values(by="passing_english")
@@ -38,6 +38,12 @@ df.sort_values(by="passing_english")
 #  The same should be true for the students passing english. 
 # (Hint: you can pass a list to the .sort_values method)
 df.sort_values(by=['passing_english', 'name'], ascending=[True, True])
+# no need for ascending when is true
+df.sort_values(by=['passing_english', 'name']
+
+# What if I want the students passing English first but names in alpha order?
+
+df.sort_values(by=['passing_english', 'name'], ascending=[False, True])
 
 
 # 1.d Sort the english grades first by passing_english, and then by the actual english grade,
@@ -47,9 +53,18 @@ df.sort_values(by = ['passing_english','english'], ascending=[True, True])
 
 # 1.e Calculate each students overall grade and add it as a column on the dataframe. 
 # The overall grade is the average of the math, english, and reading grades.
-df['overall_grade'] = (df['math'] + df['english']) / 2
+df['overall_grade'] = (df['math'] + df['english'] + df['reading']) / 3
+#other way to do it
+# using .loc if I want to select columns and rows using column labels instead of index position. With this attribute, the indexing IS inclusive. This is not the behavior you are used to when indexing strings, lists, etc. by index position.
+# df.loc[row_indexer, column_indexer]
+df.loc[:, 'math': 'reading']
+# Set axis=1 to sum all of the columns for each row, grades for each student.
 
-
+df.loc[:, 'math': 'reading'].sum(axis=1)
+# divide by 3 and assign this to a new column called overall_average
+# df['overall_average'] = round(df.loc[:, 'math': 'reading'].sum(axis=1) / 3)
+#other way
+#df['overall_average'] = round(df.iloc[:, 1:4].sum(axis=1) / 3).astype(int)
 # 2. Load the mpg dataset. Read the documentation for the dataset and use it for the following questions:
 mpg = data('mpg')
 data('mpg', show_doc=True)
@@ -78,6 +93,8 @@ mpg.dtypes
 
 # Summarize the dataframe with .info and .describe
 mpg.info()
+#.info() shows us that all of the columns have the same number of non-null values.
+
 # <class 'pandas.core.frame.DataFrame'>
 # Int64Index: 234 entries, 1 to 234
 # Data columns (total 11 columns):
@@ -98,6 +115,8 @@ mpg.info()
 # memory usage: 31.9+ KB
 
 mpg.describe()
+#.describe() provides us with the descriptive statistics for all columns with numeric dtypes.
+
 # 	displ	year	cyl	cty	hwy
 # count	234.000000	234.000000	234.000000	234.000000	234.000000
 # mean	3.471795	2003.500000	5.888889	16.858974	23.440171
@@ -134,7 +153,10 @@ mpg.nlargest(1,"mileage_difference", keep='all')
 #I need to rename class because it is a keyword
 mpg = mpg.rename(columns={'class':'Class'})
 # I use a condition to show only the compact class and get the largest 
-mpg[mpg.Class  == 'compact'].nlargest(3,"highway", keep='all')
+mpg[mpg.Class  == 'compact'].nlargest(1,"highway", keep='all')
+#I could use this format so the class is not giving an error for being a keyword
+mpg[mpg["Class"]  == 'compact'].nlargest(1,"highway", keep='all')
+
 
 # 	manufacturer	model	displ	year	cyl	trans	drv	city	highway	fl	Class	mileage_difference
 # 213	volkswagen	jetta	1.9	1999	4	manual(m5)	f	33	44	d	compact	11
@@ -167,8 +189,9 @@ mpg[mpg.manufacturer == "dodge"].nsmallest(1,"average_mileage", keep="all")[['mo
 
 
 # 3.  Load the Mammals dataset. Read the documentation for it, and use the data to answer these questions:
+data('Mammals', show_doc=True)
 mam = data('Mammals')
-data('mam', show_doc=True)
+
 # How many rows and columns are there?
 mam.shape
 #(107, 4)
@@ -202,6 +225,9 @@ len(mam[mam.specials == True])
 
 #percentage
 perc_specials = mam[mam.specials == True].shape[0] / mam.shape[0] *100
+# other way to do it with round
+round(mam[mam.specials == True].shape[0] / mam.shape[0] *100, 2)
+
 # How many animals are hoppers that are above the median speed? What percentage is this?
 # first calculate the mean
 med_speed = mam["speed"].median()
@@ -213,4 +239,4 @@ mam[(mam.speed > med_speed) & (mam.hoppers == True)]
 total_hopp = mam[(mam.speed > med_speed) & (mam.hoppers == True)].shape[0]
 
 #percentaje
-percentaje_hoppers = total_hopp / mam.shape[0] *100
+percentaje_hoppers = round(total_hopp / mam.shape[0] *100,2)
