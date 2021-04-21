@@ -23,11 +23,13 @@ df = pd.DataFrame({'name': students,
 
 # 1.a Create a column named passing_english that indicates whether each student has a passing grade in english.
 
-df["passing_english"] = df.english > 70
+df["passing_english"] = df.english >= 70
 
 # 1.b Sort the english grades by the passing_english column. How are duplicates handled?
-# it shows first all False and then All true
-df["passing_english"] = df.english > 70
+# it shows first all False and then All true. it sorted by index
+#df["passing_english"] = df.english > 70
+
+df.sort_values(by="passing_english")
 
 
 # 1.c Sort the english grades first by passing_english and then by student name. 
@@ -126,7 +128,7 @@ mpg["mileage_difference"] = mpg["highway"] - mpg ["city"]
 mpg.sort_values(by= 'mileage_difference', ascending = False).head(3)
 
 #other way
-mpg.nlargest(3,"mileage_difference", keep='all')
+mpg.nlargest(1,"mileage_difference", keep='all')
 
 # Which compact class car has the lowest highway mileage? The best?
 #I need to rename class because it is a keyword
@@ -145,6 +147,7 @@ mpg[mpg.Class  == 'compact'].nsmallest(1,"highway", keep='all')
 
 # Create a column named average_mileage that is the mean of the city and highway mileage.
 mpg["average_mileage"] = (mpg.city + mpg.highway) / 2
+# mpg["average_mileage"] = (mpg.city + mpg.highway) / len (mpg.city , mpg.highway)
 
 # Which dodge car has the best average mileage? The worst?
 #the best
@@ -198,7 +201,7 @@ mam[mam.specials == True].shape[0]
 len(mam[mam.specials == True])
 
 #percentage
-perc_specials = mam[mam.specials == True].shape[0] / mam.shape[0]
+perc_specials = mam[mam.specials == True].shape[0] / mam.shape[0] *100
 # How many animals are hoppers that are above the median speed? What percentage is this?
 # first calculate the mean
 med_speed = mam["speed"].median()
@@ -210,4 +213,4 @@ mam[(mam.speed > med_speed) & (mam.hoppers == True)]
 total_hopp = mam[(mam.speed > med_speed) & (mam.hoppers == True)].shape[0]
 
 #percentaje
-percentaje_hoppers = total_hopp / mam.shape[0]
+percentaje_hoppers = total_hopp / mam.shape[0] *100
