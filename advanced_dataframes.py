@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from env import host, username, password
 
 # 1. Create a function named get_db_url. It should accept a username, hostname, password,
@@ -44,8 +45,6 @@ titles_df = pd.read_sql('SELECT * FROM titles', url)
 # Is that what you expected?
 emp_df.shape
 #(300024, 6)
-titles_df.shape
-#
 
 titles_df.shape
 (443308, 4)
@@ -61,9 +60,12 @@ titles_df.describe(include="all")
 
 # 7.  How many unique titles are in the titles DataFrame?
 titles_df["title"]
-titles_df["title"].unique()
-len(titles_df["title"].unique())
+titles_df["title"].nunique()
 
+
+#other way
+titles_df.title.describe()
+#it gives us count, unique , freq information
 
 #8. What is the oldest date in the to_date column?
 
@@ -73,9 +75,16 @@ titles_df.head()
 
 #titles_df has to_date column
 titles_df["to_date"].min()
+#other way is sort by values
+titles_df.to_date.sort_values()
+titles_df.to_date.sort_values().head(1)
+
+
 
 #9.  What is the most recent date in the to_date column?
 titles_df["to_date"].max()
+#other way
+titles_df.to_date.sort_values().tail(1)
 
 
 # ******************************************************************************************************************************************
@@ -107,20 +116,34 @@ roles = pd.DataFrame({
 # 2. What is the result of using a right join on the DataFrames?
 #all the rows of the right dataframe are taken as it is 
 # and only those of the left dataframe that are common in both.
-users.merge(roles, left_on='role_id', right_on='id', how='right',indicator=True)
+# ** I only get back rows that are in both or right_only in a right join. ***
+user_roles_df = users.merge(roles, left_on='role_id', right_on='id', how='right',indicator=True)
 
+#I can clean  my data frame
+clean_user_roles_df = users.merge(roles, left_on='role_id', right_on='id', how='right').drop(columns='role_id').rename(columns={'id_x': 'id', 
+                                                                         'name_x': 'employee',
+                                                                         'id_y': 'role_id',
+                                                                         'name_y': 'role'} 
+                                                                         )
 
 #3. What is the result of using an outer join on the DataFrames?
 #it Shows all the rows of both dataframes.
 users.merge(roles, left_on='role_id', right_on='id', how='outer', indicator=True)
 
-
+#we can clean our df
+users.merge(roles, left_on='role_id', right_on='id', how='outer').drop(columns='role_id').rename(columns={'id_x': 'id', 
+                                                                         'name_x': 'employee',
+                                                                         'id_y': 'role_id',
+                                                                         'name_y': 'role'} 
+                                                                         )
 # 4. What happens if you drop the foreign keys from the DataFrames and try to merge them?
 #it joins both df using id or name  as a foreign key but it gives a wrong  df because the roles are under name. 
 users.merge(roles, how='outer', indicator=True)
 
 #what if there are not columns in common 
 #users2.merge(roles, how='outer', indicator=True)
+#we get an error
+
 
 # 5. Load the mpg dataset from PyDataset.
 from pydataset import data
@@ -134,84 +157,84 @@ mpg.shape
 
 
 # 8. Check out your column names and perform any cleanup you may want on them.
-#I'm checking the unique values in the column fl
-mpg.fl.unique()
+mpg.columns.tolist()
 
-new_mpg = mpg.drop(columns=['fl'])
+# Rename columns 
 
-#rename columns
-#mpg.columns = ['manufacturer', 'model', 'displacement', 'year', 'cylinders', 'transmission', 'drive', 'city','highway', 'fuel', 'class']
+mpg.columns = ['manufacturer', 'model', 'displacement', 'year', 'cylinders', 'transmission', 'drive', 'city','highway', 'fuel', 'class']
+
+
 
 # 9. Display the summary statistics for the dataset.
-new_mpg.describe()
+mpg.describe()
 
 # 10. How many different manufacturers are there?
 # it gives us an array with all the manufactures
-new_mpg['manufacturer'].unique()
-#we can use shape or len to see how many elements are in the list
-new_mpg['manufacturer'].unique().shape
-len(new_mpg['manufacturer'].unique())
+mpg['manufacturer'].nunique()
 
-#mpg.manufacturer.nunique() 
-#value_counts()
+#other way
+mpg.manufacturer.value_counts()
 
 
 
 # 11. How many different models are there?
-new_mpg.model.unique()
-diff_models= new_mpg.model.unique().shape[0]
-print("There are ", diff_models," differents models")
+mpg.model.nunique()
+
 
 # 12. Create a column named mileage_difference like you did in the DataFrames exercises; 
 # this column should contain the difference between highway and city mileage for each car.
 
-new_mpg["mileage_difference"] = new_mpg.hwy - new_mpg.cty
+mpg["mileage_difference"] = mpg.highway - mpg.city
 
 # 13. Create a column named average_mileage like you did in the DataFrames exercises; 
 # this is the mean of the city and highway mileage.
-new_mpg["average_mileage"] = (new_mpg.hwy + new_mpg.cty) / 2
+mpg["average_mileage"] = (mpg.highway + mpg.city) / 2
 
 # 14. Create a new column on the mpg dataset named is_automatic 
 # that holds boolean values denoting whether the car has an automatic transmission.
 #first I check the column that has this information and check the unique observations
-new_mpg.trans.unique()
+mpg.transmission.unique()
 
 #there are differents types of auto. so we can use .str.startswith to get all the observations
 #that start with a
-new_mpg["is_automatic"] =  new_mpg['trans'].str.startswith("a")
+mpg["is_automatic"] =  mpg['transmission'].str.startswith("a")
 
 # *********************
-# create more thtn one columns at a time
+# create more than one columns at a time
 # mpg = mpg.assign(mileage_difference = mpg.highway - mpg.city,
 #                  average_mileage = (mpg.highway + mpg.city) / 2,
 #                  is_automatic = mpg.transmission.str.startswith('a'))
 
 # 15. Using the mpg dataset, find out which which manufacturer has the best miles per gallon on average?
-new_mpg.nlargest(1,"average_mileage", keep='all')[["manufacturer", "model"]]
 
-# 	manufacturer	model
-# 222	volkswagen	new beetle
+# I calculate the average by manufacture
+mpg.groupby('manufacturer').average_mileage.mean()
 
+# I can sort the values. ascending = False gives us the max at top
+mpg.groupby('manufacturer').average_mileage.mean().sort_values(ascending=False)
+
+mpg.groupby('manufacturer').average_mileage.mean().sort_values(ascending=False).head(1)
+
+#other way
+mpg.groupby('manufacturer').average_mileage.mean().nlargest(n=1, keep='all')
 
 # 16. Do automatic or manual cars have better miles per gallon? 
 #manual ransmission  has better
 #I can use groupby and with .agg get the mean
-new_mpg.groupby('is_automatic').average_mileage.agg('mean')
+mpg.groupby('is_automatic').average_mileage.agg('mean')
 
 # I create anew df that has manual and automatin avg
-groupby_trans =new_mpg.groupby('is_automatic').average_mileage.agg(['mean'])
+groupby_trans =mpg.groupby('is_automatic').average_mileage.agg(['mean'])
 
 # I rename the index
 groupby_trans = groupby_trans.rename(index={False: "Manual" , True: "Automatic"})
 car_better_mi = groupby_trans.nlargest(1,"mean")
 print("the type of transmission  that has better miles per gallon is:", car_better_mi )
 
+#other way
+mpg.groupby('is_automatic')[['city', 'highway']].mean().sort_values(by='highway', ascending=False)
 
-# ************************************************
-# If you need to troubleshoot column names, 
-# I’d recommend running “df.columns” on its own line
-# df.columns.tolist()
-# ************************************************************
+
 
 # ******************************************************************************************************************************************
 #                                                                   EXERCISES III
@@ -246,6 +269,7 @@ order_ch[["item_name", "quantity"]]
 
 #lets se how many of each item_name
 order_ch.groupby("item_name").sum("quantitive")
+
 #this gives us just the 2 columns
 order_ch.groupby("item_name").sum()[["quantity"]]
 items_quat = order_ch.groupby("item_name").sum()[["quantity"]]
@@ -265,12 +289,111 @@ total_price.nlargest(1, "item_price", keep= "all")
 # 5. Using the titles DataFrame, visualize the number of employees with each title.
 titles_df.groupby("title").count()[['emp_no']]
 
+# ** CURRENT EMPLOYEES **
+
+curr_titles_df = titles_df[titles_df.to_date == titles_df.to_date.max()]
+
+
+
+#other way
+curr_titles_df.groupby('title').emp_no.count()
+
+curr_titles_df.groupby('title').count()[['emp_no']]
+
 # 6. Join the employees and titles DataFrames together.
+emp_and_titles_df = emp_df.merge(titles_df, how='inner', indicator=True)
+
+
 
 # 7. Visualize how frequently employees change titles.
+# I count how many titles have had each employee
+titles_per_emp = emp_and_titles_df.groupby("emp_no").count()["title"]
+# titles_per_emp is a pd series so I can do value_counts 
+change_titles =titles_per_emp.value_counts()
 
+change_titles.plot.bar(x='Number of change titles', color ="red")
+plt.title('How Common is it for Employees to Change Titles?')
+plt.ylabel('Number of Employees')
+plt.xlabel('Number of Title Changes')
+plt.xticks(ticks=[0,1,2], labels=['0 Changes', '1 Change', '2 Changes'])
+plt.show()
 # 8.For each title, find the hire date of the employee that was hired most recently with that title.
+#this gives us a pd series
+emp_and_titles_df.groupby("title").hire_date.max()
+
+#this gives us a pd df
+emp_and_titles_df.groupby("title").max()[["hire_date"]]
+
 
 # 9.Write the code necessary to create a cross tabulation of the number of titles by department. 
 # (Hint: this will involve a combination of SQL code to pull the necessary data and python/pandas code to perform the manipulations.)
 
+query = '''
+SELECT
+    t.emp_no as emp_no,
+    t.title as title,
+    d.dept_name as dept_name,
+    t.to_date as to_date
+FROM titles t
+JOIN dept_emp USING (emp_no)
+JOIN departments d USING (dept_no)
+'''
+titles_dept = pd.read_sql(query, url)
+
+
+
+
+
+
+
+
+# ***** ONLY CURRENT EMPLOYEES *******
+
+#IF I need only the current employees
+
+# I assignt o a variable the max date of hire 
+current = titles_dept["to_date"].max()
+# I use it with a condition to get all the current employees
+titles_dept[ titles_dept["to_date"] == current]
+# I create a new df with only yhe current employees
+current_emp_titles_dep = titles_dept[ titles_dept["to_date"] == current]
+
+current_titles_crosstab = pd.crosstab(current_emp_titles_dep.dept_name, current_emp_titles_dep.title)
+# to find the max number in each row (department name) quickly.
+
+current_titles_crosstab.style.highlight_max(axis=1)
+
+
+
+# *************************************************************************
+#                                  NOTES
+# *************************************************************************
+# 1.
+# Code that writes my data to a csv file for faster access.
+# titles_dept.to_csv('titles_dept.csv')
+# Read in data from a CSV file instead of repeatedly hitting database.
+
+#titles_dept = pd.read_csv('data/titles_dept.csv', index_col=0)
+#titles_dept.head()
+
+#2. 
+#OTHER WAY TO CREATE THE FUNCTION get_db_url
+# def get_db_url(database):
+#     from env import host, user, password
+#     url = f'mysql+pymysql://{user}:{password}@{host}/{database}'
+#     return url
+# query = """select * from titles"""
+
+# titles_df = pd.read_sql(query, get_db_url('employees'))
+
+#3. 
+# create more than one columns at a time
+# mpg = mpg.assign(mileage_difference = mpg.highway - mpg.city,
+#                  average_mileage = (mpg.highway + mpg.city) / 2,
+#                  is_automatic = mpg.transmission.str.startswith('a'))
+
+## ************************************************
+# If you need to troubleshoot column names, 
+# I’d recommend running “df.columns” on its own line
+# df.columns.tolist()
+# ************************************************************
